@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet } from "react-router";
 
 const Layout = lazy(() => import("./components/Layout").then(m => ({ default: m.Layout })));
 const HomePage = lazy(() => import("./components/HomePage").then(m => ({ default: m.HomePage })));
+const NotePage = lazy(() => import("./components/NotePage").then(m => ({ default: m.NotePage })));
 const PlaceholderPage = lazy(() => import("./components/PlaceholderPage").then(m => ({ default: m.PlaceholderPage })));
 
 function Wrap({ children }: { children: React.ReactNode }) {
@@ -16,7 +17,7 @@ function HomeRoute() {
   return <Wrap><HomePage /></Wrap>;
 }
 function NoteRoute() {
-  return <Wrap><PlaceholderPage title="Notes" icon="note" /></Wrap>;
+  return <Wrap><NotePage /></Wrap>;
 }
 function FinanceRoute() {
   return <Wrap><PlaceholderPage title="Finance" icon="finance" /></Wrap>;

@@ -157,6 +157,18 @@ export function TodaysAffairs({ todos, onAddTodo, onToggleTodo, onDismissTodo }:
     return `rgb(${r},${g},${b})`;
   };
 
+  const desaturateColor = (color: string, amount: number) => {
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const gray = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
+    const nr = Math.round(r + (gray - r) * amount);
+    const ng = Math.round(g + (gray - g) * amount);
+    const nb = Math.round(b + (gray - b) * amount);
+    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
+  };
+
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Toolbar */}
@@ -191,7 +203,8 @@ export function TodaysAffairs({ todos, onAddTodo, onToggleTodo, onDismissTodo }:
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
         {filtered.map(todo => {
           const baseColor = todo.color || '#B0B0B0';
-          const lightColor = lightenColor(baseColor, 0.65);
+          const effectiveColor = todo.completed ? desaturateColor(baseColor, 0.7) : baseColor;
+          const lightColor = lightenColor(effectiveColor, 0.65);
           const pct = Math.min(100, Math.max(0, todo.percentage));
 
           return (
@@ -206,7 +219,7 @@ export function TodaysAffairs({ todos, onAddTodo, onToggleTodo, onDismissTodo }:
                 {/* Progress bar overlay */}
                 <div
                   className="absolute inset-y-0 left-0 z-0"
-                  style={{ width: `${pct}%`, backgroundColor: baseColor }}
+                  style={{ width: `${pct}%`, backgroundColor: effectiveColor }}
                 />
 
                 {showManage && (

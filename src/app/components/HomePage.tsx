@@ -665,7 +665,7 @@ export function HomePage() {
   return (
     <div ref={containerRef} className="flex flex-col h-full overflow-hidden relative">
       {/* Top Bar */}
-      <div ref={topBarRef} className="shrink-0 flex items-center gap-2 px-3 py-2 bg-[#D0D0D0] border-b-2 border-[#B0B0B0] z-50">
+      <div ref={topBarRef} className="shrink-0 flex items-center gap-2 px-3 py-2 bg-[#D0D0D0] z-50">
         <button onClick={onOpenSidebar} className="p-1.5 hover:bg-[#C0C0C0] rounded">
           <Menu size={20} strokeWidth={3} className="text-[#666]" />
         </button>
