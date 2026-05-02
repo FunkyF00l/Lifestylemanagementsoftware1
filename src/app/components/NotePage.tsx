@@ -1,8 +1,8 @@
-import { useState, useRef, useCallback, useLayoutEffect } from 'react';
+import { useState, useRef, useCallback, useLayoutEffect, useEffect } from 'react';
 import { useOutletContext } from 'react-router';
 import { Menu, Search, Plus, FolderOpen, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+import Muuri from 'muuri';
 
 // ── Tree data model ──────────────────────────────────────────────
 
@@ -187,6 +187,76 @@ function FolderCard({
           </span>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Bin-packed grid (Muuri) ──────────────────────────────────────
+
+function sizeTierFor(folder: NoteFolder): 'small' | 'medium' | 'large' {
+  const n = folder.children.length;
+  if (n >= 4) return 'large';
+  if (n >= 2) return 'medium';
+  return 'small';
+}
+
+// Widths as percentages of the grid. The 10px margin on each item creates
+// the visual gap between cards. So total row width = sum(widths) ≤ 100%.
+// Using fractions that combine cleanly: small=1/3, medium=1/2, large=2/3.
+const SIZE_WIDTH: Record<'small' | 'medium' | 'large', string> = {
+  small:  'calc(33.33% - 8px)',
+  medium: 'calc(50% - 8px)',
+  large:  'calc(66.67% - 8px)',
+};
+
+function PackedGrid({
+  folders,
+  onOpen,
+  onAddNote,
+}: {
+  folders: NoteFolder[];
+  onOpen: (folder: NoteFolder, rect: DOMRect) => void;
+  onAddNote: (folderId: string) => void;
+}) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const muuriRef = useRef<Muuri | null>(null);
+
+  // Init Muuri once
+  useEffect(() => {
+    if (!gridRef.current) return;
+    const grid = new Muuri(gridRef.current, {
+      layout: { fillGaps: true, horizontal: false },
+      dragEnabled: false,
+    });
+    muuriRef.current = grid;
+    return () => {
+      grid.destroy();
+      muuriRef.current = null;
+    };
+  }, []);
+
+  // Re-sync items whenever the folder list changes
+  useLayoutEffect(() => {
+    const grid = muuriRef.current;
+    if (!grid) return;
+    grid.refreshItems();
+    grid.layout();
+  }, [folders]);
+
+  return (
+    <div ref={gridRef} className="relative w-full">
+      {folders.map(folder => {
+        const tier = sizeTierFor(folder);
+        return (
+          <div
+            key={folder.id}
+            className="absolute"
+            style={{ width: SIZE_WIDTH[tier], margin: 4 }}
+          >
+            <FolderCard folder={folder} onOpen={onOpen} onAddNote={onAddNote} />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -680,15 +750,9 @@ export function NotePage() {
         </button>
       </div>
 
-      {/* Masonry wall */}
+      {/* Bin-packed wall */}
       <div className="flex-1 overflow-y-auto px-3 pt-3 pb-4">
-        <ResponsiveMasonry columnsCountBreakPoints={{ 0: 2 }}>
-          <Masonry gutter="10px">
-            {filteredFolders.map(folder => (
-              <FolderCard key={folder.id} folder={folder} onOpen={openFolder} onAddNote={handleAddNote} />
-            ))}
-          </Masonry>
-        </ResponsiveMasonry>
+        <PackedGrid folders={filteredFolders} onOpen={openFolder} onAddNote={handleAddNote} />
         {filteredFolders.length === 0 && (
           <div className="text-center py-12">
             <span className="text-sm" style={{ color: '#999' }}>No folders found</span>

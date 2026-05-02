@@ -27,7 +27,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       <div className="fixed left-0 top-0 bottom-0 w-[75%] max-w-[300px] bg-[#D8D8D8] z-[201] flex flex-col shadow-lg">
         <div className="flex items-center justify-between px-4 py-5 border-b-2 border-[#B0B0B0]">
           <h2 className="text-lg tracking-widest uppercase" style={{ color: '#555', fontWeight: 800 }}>
-            Chrono<span className="text-[#E01A22]">Flow</span>
+            Yolo<span className="text-[#E01A22]">Track</span>
           </h2>
           <button onClick={onClose} className="p-1 hover:bg-[#C0C0C0] rounded">
             <X size={22} className="text-[#666]" />

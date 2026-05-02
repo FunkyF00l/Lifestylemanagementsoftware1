@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useOutletContext } from 'react-router';
-import { TRACKS, EVENTS, THEME_STYLES, TrackEvent, TrackData, ThemeType } from '../data';
+import { THEME_STYLES, TrackEvent, TrackData, ThemeType } from '../data';
+import { useTracks } from '../TracksContext';
 import { EventBlock } from './EventBlock';
 import { PieChart } from './PieChart';
 import { TodaysAffairs, TodoItem } from './TodaysAffairs';
@@ -114,8 +115,7 @@ export function HomePage() {
   const topBarRef = useRef<HTMLDivElement>(null);
   const [currentDate] = useState(new Date());
 
-  const [tracks, setTracks] = useState(TRACKS);
-  const [events, setEvents] = useState(EVENTS);
+  const { tracks, setTracks, events, setEvents } = useTracks();
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 

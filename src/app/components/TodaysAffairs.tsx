@@ -1,6 +1,27 @@
 import { useState, useRef, useCallback } from 'react';
 import { Menu, Search, Plus, X, Check, Trash2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { cn } from '../utils/cn';
+
+// Celebration burst: fire confetti from each corner toward the screen center,
+// then let gravity pull everything off-screen. Called when the user completes a todo.
+function fireCelebrationConfetti() {
+  const defaults = {
+    particleCount: 45,
+    spread: 70,
+    startVelocity: 55,
+    ticks: 120,
+    gravity: 1.1,
+    scalar: 1.0,
+    colors: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#B28DFF', '#FF9E7A'],
+    zIndex: 9999,
+  };
+  // Four corners shooting inward
+  confetti({ ...defaults, origin: { x: 0, y: 0 },   angle: 315 });
+  confetti({ ...defaults, origin: { x: 1, y: 0 },   angle: 225 });
+  confetti({ ...defaults, origin: { x: 0, y: 1 },   angle: 45  });
+  confetti({ ...defaults, origin: { x: 1, y: 1 },   angle: 135 });
+}
 
 export interface TodoItem {
   id: string;
@@ -65,6 +86,7 @@ function SwipeableItem({
   }, [offsetX]);
 
   const handleAction = (action: 'complete' | 'delete') => {
+    if (action === 'complete') fireCelebrationConfetti();
     setAnimating(true);
     setDismissed(true);
     setTimeout(() => onAction(todo.id, action), 300);
@@ -224,7 +246,10 @@ export function TodaysAffairs({ todos, onAddTodo, onToggleTodo, onDismissTodo }:
 
                 {showManage && (
                   <button
-                    onClick={() => onToggleTodo(todo.id)}
+                    onClick={() => {
+                      if (!todo.completed) fireCelebrationConfetti();
+                      onToggleTodo(todo.id);
+                    }}
                     className={cn(
                       "relative z-[1] mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0",
                       todo.completed ? "bg-[#008A27] border-[#008A27]" : "border-[#999]"

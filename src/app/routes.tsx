@@ -4,6 +4,8 @@ import { createBrowserRouter, Outlet } from "react-router";
 const Layout = lazy(() => import("./components/Layout").then(m => ({ default: m.Layout })));
 const HomePage = lazy(() => import("./components/HomePage").then(m => ({ default: m.HomePage })));
 const NotePage = lazy(() => import("./components/NotePage").then(m => ({ default: m.NotePage })));
+const FinancePage = lazy(() => import("./components/FinancePage").then(m => ({ default: m.FinancePage })));
+const PersonalPage = lazy(() => import("./components/PersonalPage").then(m => ({ default: m.PersonalPage })));
 const PlaceholderPage = lazy(() => import("./components/PlaceholderPage").then(m => ({ default: m.PlaceholderPage })));
 
 function Wrap({ children }: { children: React.ReactNode }) {
@@ -20,10 +22,10 @@ function NoteRoute() {
   return <Wrap><NotePage /></Wrap>;
 }
 function FinanceRoute() {
-  return <Wrap><PlaceholderPage title="Finance" icon="finance" /></Wrap>;
+  return <Wrap><FinancePage /></Wrap>;
 }
 function PersonalRoute() {
-  return <Wrap><PlaceholderPage title="Personal" icon="personal" /></Wrap>;
+  return <Wrap><PersonalPage /></Wrap>;
 }
 
 export const router = createBrowserRouter([

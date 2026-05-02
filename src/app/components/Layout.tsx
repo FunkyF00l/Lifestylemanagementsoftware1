@@ -2,6 +2,8 @@ import { useState, useRef, useCallback } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Home, StickyNote, Wallet, User, Bot } from 'lucide-react';
 import { Sidebar } from './Sidebar';
+import { AIAgentModal } from './AIAgentModal';
+import { TracksProvider } from '../TracksContext';
 import { cn } from '../utils/cn';
 
 const TABS = [
@@ -16,9 +18,18 @@ const EDGE_THRESHOLD = 20; // px from edge to trigger hide
 const PEEK_SIZE = 14; // how much peeks out when hidden
 
 export function Layout() {
+  return (
+    <TracksProvider>
+      <LayoutInner />
+    </TracksProvider>
+  );
+}
+
+function LayoutInner() {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
 
   // FAB drag state
   const [fabPos, setFabPos] = useState({ x: window.innerWidth - FAB_SIZE - 16, y: window.innerHeight - 160 });
@@ -70,8 +81,9 @@ export function Layout() {
         ...p,
         x: fabHidden === 'left' ? 16 : window.innerWidth - FAB_SIZE - 16,
       }));
+      return;
     }
-    // future AI agent
+    setAiOpen(true);
   }, [fabHidden]);
 
   return (
@@ -100,6 +112,9 @@ export function Layout() {
       >
         <Bot size={26} className="text-[#E8E8E8] pointer-events-none" />
       </div>
+
+      {/* AI Agent Modal */}
+      <AIAgentModal isOpen={aiOpen} onClose={() => setAiOpen(false)} />
 
       {/* Bottom Tab Bar */}
       <div className="shrink-0 bg-[#C8C8C8] flex items-center justify-around px-2 py-2 border-t-2 border-[#A0A0A0]">
